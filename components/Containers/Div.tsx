@@ -3,9 +3,12 @@ import evaluateProps from "@/utils/pocket-ui/evaluateProps";
 import { ComponentProps } from "react";
 
 // Optional: Add more props unique to only this element
-export interface CustomDivProps extends ContainerProps {}
+export interface CustomDivProps extends ContainerProps {
+  // className?: number;
+}
+
 export type NativeDivProps = ComponentProps<"div">;
-export type DivProps = NativeDivProps & CustomDivProps;
+export type DivProps = NativeDivProps | CustomDivProps;
 
 const Div = (props: DivProps) => {
   // const inside = "from inside component";
@@ -16,7 +19,7 @@ const Div = (props: DivProps) => {
     CustomDivProps
   >(props, {
     nativeOverrides: {
-      className: (value) => 0,
+      className: (value) => "",
     },
     customOverrides: {},
   });
