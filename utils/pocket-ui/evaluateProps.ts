@@ -7,16 +7,12 @@ type PropEvaluationOptions<NativeProps, CustomProps> = {
   customOverrides: {
     [key in keyof CustomProps]: PropUpdater<CustomProps[key]>;
   };
-};
-
-type PropScope = {
-  [key: string]: any;
+  scope?: { [key: string]: any };
 };
 
 const evaluateProps = <Props, NativeProps, CustomProps>(
   props: Props,
-  options?: PropEvaluationOptions<NativeProps, CustomProps>,
-  scope?: PropScope
+  options?: PropEvaluationOptions<NativeProps, CustomProps>
 ): Props => {
   return props;
 };

@@ -1,11 +1,11 @@
 import type { Ref, ReactNode, ReactElement, ComponentProps } from "react";
 
 // These props are on EVERY component
-export interface BaseProps {
+export type BaseProps = {
   children?: Readonly<ReactNode>;
   test?: { [key: string]: any };
   ref?: Ref<HTMLElement>;
-}
+};
 
 // These props are on ALL STYLABLE components ONLY
 // export interface StyleProps extends BaseProps {
@@ -28,10 +28,10 @@ export interface BaseProps {
 //   | "table"
 //   | "tr";
 
-export interface ContainerProps extends BaseProps {
+export type ContainerProps = {
   containerSpecific?: string;
   // component?: ContainerVariant;
-}
+} & BaseProps;
 
 // export type TypographyVariant =
 //   | "p"
@@ -56,10 +56,10 @@ export interface ContainerProps extends BaseProps {
 //   | "th"
 //   | "td";
 
-export interface TypographyProps extends BaseProps {
+export type TypographyProps = {
   typographySpecific?: string;
   // component?: TypographyVariant;
-}
+} & BaseProps;
 
 // ALL element name variants
 // export type ElementVariant = ContainerVariant | TypographyVariant;
