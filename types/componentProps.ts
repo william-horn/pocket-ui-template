@@ -1,9 +1,10 @@
 import type { Ref, ReactNode, ReactElement, ComponentProps } from "react";
+import { SmartOmit } from "./util";
 
 // These props are on EVERY component
 export type BaseProps = {
   children?: Readonly<ReactNode>;
-  test?: { [key: string]: any };
+  test?: string;
   ref?: Ref<HTMLElement>;
 };
 
@@ -30,8 +31,8 @@ export type BaseProps = {
 
 export type ContainerProps = {
   containerSpecific?: string;
-  // component?: ContainerVariant;
-} & BaseProps;
+  test?: boolean;
+} & SmartOmit<BaseProps, "test">;
 
 // export type TypographyVariant =
 //   | "p"
@@ -58,7 +59,6 @@ export type ContainerProps = {
 
 export type TypographyProps = {
   typographySpecific?: string;
-  // component?: TypographyVariant;
 } & BaseProps;
 
 // ALL element name variants

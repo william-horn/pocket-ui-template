@@ -5,7 +5,7 @@ type PropEvaluationOptions<NativeProps, CustomProps> = {
     [key in keyof NativeProps]: PropUpdater<NativeProps[key]>;
   };
   customOverrides: {
-    [key in keyof CustomProps]: PropUpdater<CustomProps[key]>;
+    [key in keyof CustomProps]: PropUpdater<undefined>;
   };
   scope?: { [key: string]: any };
 };

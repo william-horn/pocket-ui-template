@@ -1,17 +1,20 @@
 import type { ContainerProps } from "@/types/componentProps";
 import evaluateProps from "@/utils/pocket-ui/evaluateProps";
 import { ComponentProps } from "react";
+import { SmartOmit } from "@/types/util";
 
 // Optional: Add more props unique to only this element
-export type CustomDivProps = {
-  // className?: number;
-  newCustomProp?: string;
-  width?: boolean;
-  // id?: boolean;
-} & ContainerProps;
+export type CustomDivProps =
+  | {
+      // className?: number;
+      newCustomProp?: string;
+      containerSpecific?: number | boolean;
+      width?: boolean;
+      id?: boolean | NativeDivProps["id"];
+    } & SmartOmit<ContainerProps, "containerSpecific">;
 
 export type NativeDivProps = ComponentProps<"div">;
-export type DivProps = NativeDivProps & CustomDivProps;
+export type DivProps = CustomDivProps & SmartOmit<NativeDivProps, "id">;
 
 const Div = (props: DivProps) => {
   const evaluatedProps: DivProps = evaluateProps<
@@ -23,8 +26,15 @@ const Div = (props: DivProps) => {
       id: () => "",
     },
     customOverrides: {
-      newCustomProp: () => "a new custom property",
-      width: () => true,
+      newCustomProp: () => {
+        console.log("Custom prop activated");
+      },
+      width: () => {
+        console.log("Width activated");
+      },
+      id: () => {
+        console.log("Id activated");
+      },
     },
   });
 
