@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------- */
+/* BASE THEME SETTINGS */
+/* ------------------- */
+.BASE_THEME,
+.FONT-THEME-base {
+  --fontFamily__primary: "Montserrat", sans-serif;
+}
+
+.BASE_THEME,
+.SCROLLBAR_THEME-base {
+  /* SCROLLBAR BACKGROUND COLORS */
+  --bgColor__scrollbar-primary: #4d4d4d;
+  --bgColor__hover-scrollbar-primary: #4d4d4d;
+  --bgColor__scrollbar-track: rgba(47, 47, 51, 0.7);
+
+  /* SCROLLBAR WIDTH */
+  --width__scrollbar: 8px;
+}
+
+/* ------------------- */
+/* DARK THEME SETTINGS */
+/* ------------------- */
+.THEME-dark,
+.BACKGROUND_THEME-dark {
+  --bgColor__primary: #171717;
+  --bgColor__inset-primary: #1c1c1c;
+  --bgColor__secondary: #020202;
+  --bgColor__inset-secondary: #252424;
+}
+
+.THEME-dark,
+.BUTTON_THEME-dark {
+  --bgColor__button-primary: #494949;
+  --bgColor__inset-button-primary: #585858;
+}
+
+.THEME-dark,
+.TEXT_THEME-dark {
+  --color__primary: #dfdfdf;
+  --color__muted-primary: #535353;
+}
+
+.THEME-dark,
+.FONT-THEME-dark {
+  --fontFamily__primary: "Montserrat", sans-serif;
+}
+
+/* --------------- */
+/* WIREFRAME CLASS */
+/* --------------- */
+.wireframe * {
+  outline: 1px solid red !important;
+}
+
+/* -------------- */
+/* DEFAULT STYLES */
+/* -------------- */
+
+/* INPUT */
+input {
+  all: unset;
+  color: var(--text-color-0);
+}
+
+input::placeholder {
+  color: var(--text-color-0-muted);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+  width: var(--scroll-bar-width);
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 10px var(--bg-color-0-scroll-bar-track);
+  /* background-color: var(--bg-color-scroll-bar-track);  */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  /* background: #5f677e;  */
+  background: var(--bg-color-0-scroll-bar);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-color-0-scroll-bar);
+}
