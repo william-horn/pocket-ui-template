@@ -1,3 +1,5 @@
+import defaultPropsBehavior from "./defaultPropsBehavior";
+
 /**
  * PropUpdater:
  *
@@ -15,7 +17,7 @@ type PropEvaluationOptions<NativeProps, CustomProps> = {
    * Thus, why we pass `NativeProps[key]` as the `Input` and expected
    * `Result` type to `PropUpdater`
    */
-  nativeOverrides: {
+  nativeOverrides?: {
     [key in keyof NativeProps]: PropUpdater<NativeProps[key], NativeProps[key]>;
   };
 
@@ -29,7 +31,7 @@ type PropEvaluationOptions<NativeProps, CustomProps> = {
    * hence why we pass `CustomProps[key]` as the input type. However,
    * since no return type is expected, we pass `undefined` for `Result`
    */
-  customOverrides: {
+  customOverrides?: {
     [key in keyof CustomProps]: PropUpdater<CustomProps[key], undefined>;
   };
 
