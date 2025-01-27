@@ -4,8 +4,7 @@
  * `Props` class will wrap around a provided object of component
  * properties, appending a useful API to manipulate those properties.
  */
-
-import { StringKeyObject } from "@/types/util";
+import type { StringKeyObject } from "@/types/util";
 
 /**
  * `Props` will accept an object of properties and the resultant instance
@@ -63,7 +62,7 @@ export default class Props<ElementProps extends StringKeyObject> {
 
   getCategory(categoryName: string, propKey?: keyof ElementProps): any {
     if (propKey) return this._categories[categoryName][propKey];
-    return this._categories[categoryName];
+    return new Props(this._categories[categoryName]);
   }
 
   /**

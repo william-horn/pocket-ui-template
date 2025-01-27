@@ -3,7 +3,7 @@
  *
  * Arbitrary utility types for quality of life
  */
-import { JSX, AllHTMLAttributes } from "react";
+import type { JSX, AllHTMLAttributes } from "react";
 
 /**
  * Use native `Omit<T, U>` but add intellisense for
