@@ -1,3 +1,12 @@
+/**
+ * @author William J. Horn
+ *
+ * `evaluateProps()` should accept some object of component props and
+ * evaluate them against a custom callback list of property modifiers,
+ * or against some default list. This allows custom components to
+ * interpret custom props in a more uniform and reusable way.
+ */
+
 import defaultPropsBehavior from "./defaultPropsBehavior";
 import Props from "../classes/Props";
 

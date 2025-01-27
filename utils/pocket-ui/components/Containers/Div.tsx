@@ -1,3 +1,11 @@
+/**
+ * @author William J. Horn
+ *
+ * A wrapper component for the `div` DOM element. Includes all
+ * custom props provided by pocket-ui and props are strictly
+ * type checked
+ */
+
 import type { ContainerProps } from "@/utils/pocket-ui/types/componentProps";
 import evaluateProps from "@/utils/pocket-ui/util/evaluateProps";
 import { ComponentProps } from "react";
