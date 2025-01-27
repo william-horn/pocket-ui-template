@@ -1,4 +1,5 @@
 import defaultPropsBehavior from "./defaultPropsBehavior";
+import Props from "../classes/Props";
 
 /**
  * PropUpdater:
@@ -43,11 +44,19 @@ type PropEvaluationOptions<NativeProps, CustomProps> = {
   scope?: { [key: string]: any };
 };
 
-const evaluateProps = <Props, NativeProps, CustomProps>(
-  props: Props,
+/**
+ *
+ * @param props
+ * @param options
+ * @returns
+ */
+const evaluateProps = <ElementProps, NativeProps, CustomProps>(
+  props: ElementProps,
   options?: PropEvaluationOptions<NativeProps, CustomProps>
-): Props => {
-  return props;
+): Props<ElementProps> => {
+  const updatedProps: Props<ElementProps> = new Props<ElementProps>(props);
+
+  return updatedProps;
 };
 
 export default evaluateProps;

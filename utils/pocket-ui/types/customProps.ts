@@ -5,8 +5,15 @@
  * and their default behavior functions are declared.
  */
 export type CustomProp = keyof CustomProps;
-export interface CustomProps {
+export type CustomProps = {
   className?: any;
   width?: any;
   height?: any;
-}
+};
+
+// Object declaration
+export const customProps: CustomProps = {
+  className: true,
+  width: true,
+  height: true,
+};

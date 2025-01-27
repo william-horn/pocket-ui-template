@@ -1,7 +1,8 @@
-import type { ContainerProps } from "@/types/componentProps";
-import evaluateProps from "@/utils/pocket-ui/evaluateProps";
+import type { ContainerProps } from "@/utils/pocket-ui/types/componentProps";
+import evaluateProps from "@/utils/pocket-ui/util/evaluateProps";
 import { ComponentProps } from "react";
 import { SmartOmit } from "@/types/util";
+import Props from "@/utils/pocket-ui/classes/Props";
 
 /**
  * `Custom<...>Props` is an optional extension of custom component
@@ -31,7 +32,7 @@ export type NativeDivProps = ComponentProps<"div">;
 export type DivProps = CustomDivProps & SmartOmit<NativeDivProps, "id">;
 
 const Div = (props: DivProps) => {
-  const evaluatedProps: DivProps = evaluateProps<
+  const evaluatedProps: Props<DivProps> = evaluateProps<
     DivProps,
     NativeDivProps,
     CustomDivProps

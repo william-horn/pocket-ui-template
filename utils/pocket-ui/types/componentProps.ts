@@ -1,5 +1,5 @@
 import type { Ref, ReactNode, ReactElement, ComponentProps } from "react";
-import { SmartOmit } from "./util";
+import { SmartOmit } from "../../../types/util";
 
 // These props are on EVERY component
 export type BaseProps = {
