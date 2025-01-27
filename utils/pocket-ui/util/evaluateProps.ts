@@ -46,9 +46,23 @@ type PropEvaluationOptions<NativeProps, CustomProps> = {
 
 /**
  *
- * @param props
- * @param options
- * @returns
+ * @param props The property object to evaluate. This should be some set
+ * of valid properties that belong to a component. For example:
+ * `{id = "#some id"}`
+ *
+ * @param options An optional object containing extra functionality
+ * describing how the props should be evaluated. Dedicated functionality
+ * is given for native props as (described by `nativeOverrides`) well
+ * as custom props (describeds by `customOverrides`).
+ *
+ * Both `nativeOverrides` and `customOverrides` are objects of the following
+ * structure:
+ *
+ * ```ts
+ * { nativeProp: (value: T, scope) => ...: T }
+ * ```
+ * @returns An instance of the `Props` class which wraps around the
+ * original props object
  */
 const evaluateProps = <ElementProps, NativeProps, CustomProps>(
   props: ElementProps,

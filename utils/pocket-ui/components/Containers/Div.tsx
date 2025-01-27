@@ -57,6 +57,8 @@ const Div = (props: DivProps) => {
     },
   });
 
+  // console.log(evaluatedProps.without("className"));
+
   return <div></div>;
 };
 
