@@ -23,16 +23,20 @@ const Div = (props: DivProps) => {
     CustomDivProps
   >(props, {
     nativeOverrides: {
-      id: () => "",
+      id: (value) => {
+        value = "";
+        return "";
+      },
     },
     customOverrides: {
-      newCustomProp: () => {
+      // All of these types should be inferred correctly
+      newCustomProp: (value) => {
         console.log("Custom prop activated");
       },
-      width: () => {
+      width: (value) => {
         console.log("Width activated");
       },
-      id: () => {
+      id: (value) => {
         console.log("Id activated");
       },
     },
