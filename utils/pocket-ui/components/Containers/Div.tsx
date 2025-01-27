@@ -8,8 +8,7 @@
 
 import type { ContainerProps } from "@/utils/pocket-ui/types/componentProps";
 import evaluateProps from "@/utils/pocket-ui/util/evaluateProps";
-import { ComponentProps } from "react";
-import { SmartOmit } from "@/types/util";
+import { SmartOmit, NativePropsOf } from "@/types/util";
 import Props from "@/utils/pocket-ui/classes/Props";
 
 /**
@@ -29,7 +28,7 @@ export type CustomDivProps =
  * `Native<...>Props` will retrieve the native property types
  * for the element `<...>`.
  */
-export type NativeDivProps = ComponentProps<"div">;
+export type NativeDivProps = NativePropsOf<"div">;
 
 /**
  * `<...>Props` represents _all_ prop types of this component.
@@ -40,7 +39,7 @@ export type NativeDivProps = ComponentProps<"div">;
 export type DivProps = CustomDivProps & SmartOmit<NativeDivProps, "id">;
 
 const Div = (props: DivProps) => {
-  const evaluatedProps: Props<DivProps> = evaluateProps<
+  const finalProps: Props<DivProps> = evaluateProps<
     DivProps,
     NativeDivProps,
     CustomDivProps
@@ -52,22 +51,23 @@ const Div = (props: DivProps) => {
       },
     },
     customOverrides: {
+      id: (value) => {},
       // All of these types should be inferred correctly
-      newCustomProp: (value) => {
-        console.log("Custom prop activated");
-      },
-      width: (value) => {
-        console.log("Width activated");
-      },
-      id: (value) => {
-        console.log("Id activated");
-      },
+      // newCustomProp: (value) => {
+      //   console.log("Custom prop activated");
+      // },
+      // width: (value) => {
+      //   console.log("Width activated");
+      // },
+      // id: (value) => {
+      //   console.log("Id activated");
+      // },
     },
   });
 
-  // console.log(evaluatedProps.without("className"));
-
-  return <div></div>;
+  return (
+    <div {...finalProps.without("children")}>{finalProps.get("children")}</div>
+  );
 };
 
 export default Div;

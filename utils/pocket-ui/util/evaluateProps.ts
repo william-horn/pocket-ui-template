@@ -9,6 +9,7 @@
 
 import defaultPropsBehavior from "./defaultPropsBehavior";
 import Props from "../classes/Props";
+import { StringKeyObject } from "@/types/util";
 
 /**
  * PropUpdater:
@@ -16,9 +17,12 @@ import Props from "../classes/Props";
  * A callback function type used for modifying or processing
  * the value of a component prop.
  */
-type PropUpdater<Input, Result> = (value: Exclude<Input, undefined>) => Result;
+export type PropUpdater<Input = any, Result = any> = (
+  value: Exclude<Input, undefined>,
+  scope?: StringKeyObject
+) => Result;
 
-type PropEvaluationOptions<NativeProps, CustomProps> = {
+export type PropEvaluationOptions<NativeProps, CustomProps> = {
   /**
    * PropUpdater functions for native props will be passed a
    * `value` of the type corresponding to the component's native
@@ -50,7 +54,7 @@ type PropEvaluationOptions<NativeProps, CustomProps> = {
    * be accessed inside of the PropUpdater callback function's second
    * argument.
    */
-  scope?: { [key: string]: any };
+  scope?: StringKeyObject;
 };
 
 /**
@@ -73,11 +77,39 @@ type PropEvaluationOptions<NativeProps, CustomProps> = {
  * @returns An instance of the `Props` class which wraps around the
  * original props object
  */
-const evaluateProps = <ElementProps, NativeProps, CustomProps>(
+const evaluateProps = <
+  ElementProps extends StringKeyObject,
+  NativeProps,
+  CustomProps
+>(
   props: ElementProps,
-  options?: PropEvaluationOptions<NativeProps, CustomProps>
+  options: PropEvaluationOptions<NativeProps, CustomProps> = {}
 ): Props<ElementProps> => {
   const updatedProps: Props<ElementProps> = new Props<ElementProps>(props);
+  const propScope: StringKeyObject = options.scope || {};
+
+  for (const propKey in props) {
+    const propValue = props[propKey];
+
+    const customPropKey: keyof CustomProps =
+      propKey as string as keyof CustomProps;
+
+    if (options.customOverrides && options.customOverrides[customPropKey]) {
+      options.customOverrides[customPropKey](propValue, propScope);
+      updatedProps.setCategory("custom", propKey, propValue);
+      continue;
+    }
+
+    const nativePropKey: keyof NativeProps =
+      propKey as string as keyof NativeProps;
+
+    if (options.nativeOverrides && options.nativeOverrides[nativePropKey]) {
+      updatedProps.set(
+        propKey,
+        options.nativeOverrides[nativePropKey](propValue, propScope)
+      );
+    }
+  }
 
   return updatedProps;
 };
