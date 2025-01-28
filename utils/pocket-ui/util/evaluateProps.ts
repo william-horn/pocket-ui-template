@@ -6,8 +6,6 @@
  * or against some default list. This allows custom components to
  * interpret custom props in a more uniform and reusable way.
  */
-
-import defaultPropsBehavior from "./defaultPropsBehavior";
 import Props from "../classes/Props";
 import type { StringKeyObject } from "@/types/util";
 
@@ -22,6 +20,11 @@ export type PropUpdater<Input = any, Result = any> = (
   scope?: StringKeyObject
 ) => Result;
 
+/**
+ * In cases where NativeProps and CustomProps are not
+ * known, a default generic object type is assigned
+ * to them.
+ */
 export type PropEvaluationOptions<
   NativeProps extends StringKeyObject = StringKeyObject,
   CustomProps extends StringKeyObject = StringKeyObject
@@ -58,6 +61,10 @@ export type PropEvaluationOptions<
    * argument.
    */
   scope?: StringKeyObject;
+
+  nativeDefaults?: {
+    [key in keyof NativeProps]: NativeProps[key];
+  };
 };
 
 /**
@@ -91,36 +98,47 @@ const evaluateProps = <
   const updatedProps: Props<ElementProps> = new Props<ElementProps>(props);
   const propScope: StringKeyObject = options.scope || {};
 
+  /**
+   * Fire prop override callbacks for all props that have
+   * been defined through the component's construction
+   */
   for (const propKey in props) {
     const propValue = props[propKey];
 
     if (options.customOverrides && options.customOverrides[propKey]) {
       options.customOverrides[propKey](propValue, propScope);
-      updatedProps.setCategory("custom", propKey, propValue);
-      continue;
-    }
-
-    if (options.nativeOverrides && options.nativeOverrides[propKey]) {
-      updatedProps.setCategory(
-        "native",
+      updatedProps.custom.set(propKey, propValue);
+    } else if (options.nativeOverrides && options.nativeOverrides[propKey]) {
+      updatedProps.native.set(
         propKey,
         options.nativeOverrides[propKey](propValue, propScope)
       );
-      continue;
     }
 
-    if (defaultPropsBehavior.customOverrides![propKey]) {
-      defaultPropsBehavior.customOverrides![propKey](propValue, propScope);
-      updatedProps.setCategory("custom", propKey, propValue);
-      continue;
-    }
+    updatedProps.native.set(propKey, propValue);
+  }
 
-    if (defaultPropsBehavior.nativeOverrides![propKey]) {
-      updatedProps.setCategory(
-        "native",
-        propKey,
-        defaultPropsBehavior.nativeOverrides![propKey](propValue, propScope)
-      );
+  /**
+   * Check all default props that have not been defined during
+   * component's construction and evaluate their default values.
+   */
+  if (options.nativeDefaults) {
+    for (const defaultPropKey in options.nativeDefaults) {
+      if (updatedProps.get(defaultPropKey) !== undefined) {
+        // updatedProps.native.set(
+        //   defaultPropKey,
+        //   options.nativeDefaults[defaultPropKey]
+        // );
+        if (
+          options.nativeOverrides &&
+          options.nativeOverrides[defaultPropKey]
+        ) {
+          options.nativeOverrides[defaultPropKey](
+            options.nativeDefaults[defaultPropKey],
+            propScope
+          );
+        }
+      }
     }
   }
 

@@ -38,6 +38,11 @@ export type NativeDivProps = NativePropsOf<"div">;
  */
 export type DivProps = CustomDivProps & SmartOmit<NativeDivProps, "id">;
 
+/**
+ * Default className config of component
+ */
+const className = "w-[50px] h-[50px] bg-red-500";
+
 const Div = (props: DivProps) => {
   const finalProps: Props<DivProps> = evaluateProps<
     DivProps,
@@ -45,21 +50,21 @@ const Div = (props: DivProps) => {
     CustomDivProps
   >(props, {
     nativeOverrides: {
-      id: (value) => "DEFAULT ID",
+      id: (value) => value + " bg",
     },
     customOverrides: {
       // id: (value) => {
       //   console.log("CUSTOM OVERRIDE ID: ", value);
       // },
     },
-    scope: {
-      baseClass: "w-[100px] h-[100px] bg-red-500",
+    nativeDefaults: {
+      className,
     },
   });
 
   return (
-    <div {...finalProps.getCategory("native").without("children")}>
-      {finalProps.getCategory("native").get("children")}
+    <div {...finalProps.native.without("children")}>
+      {finalProps.native.get("children")}
     </div>
   );
 };
