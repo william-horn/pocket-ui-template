@@ -8,7 +8,7 @@
 
 import type { ContainerProps } from "@/utils/pocket-ui/types/componentProps";
 import evaluateProps from "@/utils/pocket-ui/util/evaluateProps";
-import type { SmartOmit, NativePropsOf } from "@/types/util";
+import type { SmartOmit, NativePropsOf, StringKeyObject } from "@/types/util";
 import Props from "@/utils/pocket-ui/classes/Props";
 
 /**
@@ -50,15 +50,24 @@ const Div = (props: DivProps) => {
     CustomDivProps
   >(props, {
     nativeOverrides: {
-      id: (value) => value + " bg",
+      id: (ref) => {
+        return ref;
+      },
+      className: (ref) => {
+        return ref;
+      },
     },
     customOverrides: {
+      newCustomProp: (ref) => {
+        return ref;
+      },
       // id: (value) => {
       //   console.log("CUSTOM OVERRIDE ID: ", value);
       // },
     },
     nativeDefaults: {
       className,
+      id: "some default",
     },
   });
 
