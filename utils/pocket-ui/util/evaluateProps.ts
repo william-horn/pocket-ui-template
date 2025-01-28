@@ -125,17 +125,21 @@ const evaluateProps = <
   if (options.nativeDefaults) {
     for (const defaultPropKey in options.nativeDefaults) {
       if (updatedProps.get(defaultPropKey) !== undefined) {
-        // updatedProps.native.set(
-        //   defaultPropKey,
-        //   options.nativeDefaults[defaultPropKey]
-        // );
         if (
           options.nativeOverrides &&
           options.nativeOverrides[defaultPropKey]
         ) {
-          options.nativeOverrides[defaultPropKey](
-            options.nativeDefaults[defaultPropKey],
-            propScope
+          updatedProps.native.set(
+            defaultPropKey,
+            options.nativeOverrides[defaultPropKey](
+              options.nativeDefaults[defaultPropKey],
+              propScope
+            )
+          );
+        } else {
+          updatedProps.native.set(
+            defaultPropKey,
+            options.nativeDefaults[defaultPropKey]
           );
         }
       }
