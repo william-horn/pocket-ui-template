@@ -27,3 +27,5 @@ export type NativePropsOf<T extends keyof JSX.IntrinsicElements> =
 export type AllNativeProps = {
   [K in keyof AllHTMLAttributes<undefined>]?: AllHTMLAttributes<undefined>[K];
 };
+
+export const forceType = <A, B>(value: A) => value as unknown as B;

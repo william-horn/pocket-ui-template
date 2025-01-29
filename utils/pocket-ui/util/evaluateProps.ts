@@ -7,7 +7,7 @@
  * interpret custom props in a more uniform and reusable way.
  */
 import Props from "../classes/Props";
-import type { StringKeyObject } from "@/types/util";
+import { forceType, type StringKeyObject } from "@/types/util";
 
 /**
  * PropUpdater:
@@ -75,6 +75,7 @@ export type PropEvaluationOptions<
 class PropRef<ValueType> {
   public value;
   public scope: StringKeyObject;
+  public _propagating = true;
 
   constructor(value: ValueType, scope?: StringKeyObject) {
     this.value = value;
@@ -82,7 +83,11 @@ class PropRef<ValueType> {
   }
 
   stopPropagating() {
-    return false;
+    this._propagating = false;
+  }
+
+  propagating() {
+    return this._propagating;
   }
 }
 
@@ -152,10 +157,10 @@ const evaluateProps = <
        */
       options.customOverrides[propKey](
         new PropRef<CustomProps[Extract<keyof ElementProps, string>]>(
-          propValue as unknown as CustomProps[Extract<
-            keyof ElementProps,
-            string
-          >],
+          forceType<
+            typeof propValue,
+            CustomProps[Extract<keyof ElementProps, string>]
+          >(propValue),
           propScope
         )
       );
@@ -165,10 +170,10 @@ const evaluateProps = <
         propKey,
         options.nativeOverrides[propKey](
           new PropRef<NativeProps[Extract<keyof ElementProps, string>]>(
-            propValue as unknown as NativeProps[Extract<
-              keyof ElementProps,
-              string
-            >],
+            forceType<
+              typeof propValue,
+              NativeProps[Extract<keyof ElementProps, string>]
+            >(propValue),
             propScope
           )
         )
@@ -184,6 +189,10 @@ const evaluateProps = <
    */
   if (options.nativeDefaults) {
     for (const defaultPropKey in options.nativeDefaults) {
+      const defaultPropValue = options.nativeDefaults[
+        defaultPropKey
+      ] as keyof NativeProps;
+
       if (updatedProps.get(defaultPropKey) === undefined) {
         if (
           options.nativeOverrides &&
@@ -192,8 +201,12 @@ const evaluateProps = <
           updatedProps.native.set(
             defaultPropKey,
             options.nativeOverrides[defaultPropKey](
-              options.nativeDefaults[defaultPropKey],
-              propScope
+              new PropRef<NativeProps[Extract<keyof NativeProps, string>]>(
+                forceType<
+                  typeof defaultPropValue,
+                  NativeProps[Extract<keyof NativeProps, string>]
+                >(defaultPropValue)
+              )
             )
           );
         } else {
