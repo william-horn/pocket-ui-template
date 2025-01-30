@@ -8,8 +8,7 @@
 
 import type { ContainerProps } from "@/utils/pocket-ui/types/componentProps";
 import evaluateProps from "@/utils/pocket-ui/util/evaluateProps";
-import type { SmartOmit, NativePropsOf, StringKeyObject } from "@/types/util";
-import Props from "@/utils/pocket-ui/classes/Props";
+import type { SmartOmit, NativePropsOf } from "@/types/util";
 
 /**
  * `Custom<...>Props` is an optional extension of custom component
@@ -44,32 +43,33 @@ export type DivProps = CustomDivProps & SmartOmit<NativeDivProps, "id">;
 const className = "w-[50px] h-[50px] bg-red-500";
 
 const Div = (props: DivProps) => {
-  const finalProps: Props<DivProps> = evaluateProps<
-    DivProps,
-    NativeDivProps,
-    CustomDivProps
-  >(props, {
-    nativeOverrides: {
-      id: (ref) => {
-        return ref;
+  const finalProps = evaluateProps<DivProps, NativeDivProps, CustomDivProps>(
+    props,
+    {
+      nativeOverrides: {
+        id: (ref) => {
+          ref.value = "override";
+          ref.stopPropagating();
+          return ref;
+        },
+        className: (ref) => {
+          return ref;
+        },
       },
-      className: (ref) => {
-        return ref;
+      customOverrides: {
+        newCustomProp: (ref) => {
+          return ref;
+        },
+        id: (ref) => {
+          return ref;
+        },
       },
-    },
-    customOverrides: {
-      newCustomProp: (ref) => {
-        return ref;
+      nativeDefaults: {
+        className,
+        id: "some default",
       },
-      // id: (value) => {
-      //   console.log("CUSTOM OVERRIDE ID: ", value);
-      // },
-    },
-    nativeDefaults: {
-      className,
-      id: "some default",
-    },
-  });
+    }
+  );
 
   return (
     <div {...finalProps.native.without("children")}>

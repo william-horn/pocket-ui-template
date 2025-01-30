@@ -2,13 +2,19 @@
  * @author William J. Horn
  */
 
-import { StringKeyObject } from "@/types/util";
+import type { StringKeyObject } from "@/types/util";
 
-export default class ObjectQuery<ObjectType extends StringKeyObject> {
+export default class ObjectQuery<
+  ObjectType extends StringKeyObject = StringKeyObject
+> {
   private _object: ObjectType;
 
-  constructor(object?: ObjectType) {
-    this._object = object || ({} as ObjectType);
+  constructor(object: ObjectType = {} as ObjectType, clone: boolean = true) {
+    if (clone) {
+      this._object = { ...object };
+    } else {
+      this._object = object;
+    }
   }
 
   /**
@@ -43,7 +49,11 @@ export default class ObjectQuery<ObjectType extends StringKeyObject> {
     return this._object[key];
   }
 
-  all(): StringKeyObject {
+  has(key: keyof ObjectType): boolean {
+    return key in this._object;
+  }
+
+  collect(): StringKeyObject {
     return this._object;
   }
 }

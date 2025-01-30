@@ -8,6 +8,10 @@
  */
 import Props from "../classes/Props";
 import { forceType, type StringKeyObject } from "@/types/util";
+import _defaultPropsBehavior from "./defaultPropsBehavior";
+
+// Modified imports
+const defaultPropsBehavior: StringKeyObject = _defaultPropsBehavior;
 
 /**
  * PropUpdater:
@@ -70,16 +74,26 @@ export type PropEvaluationOptions<
   nativeDefaults?: {
     [key in keyof NativeProps]: NativeProps[key];
   };
+
+  customDefaults?: {
+    [key in keyof CustomProps]: CustomProps[key];
+  };
 };
 
 class PropRef<ValueType> {
   public value;
   public scope: StringKeyObject;
-  public _propagating = true;
+  public readonly defaultValue;
+  private _propagating = true;
 
-  constructor(value: ValueType, scope?: StringKeyObject) {
+  constructor(
+    value: ValueType,
+    defaultValue: ValueType | undefined = undefined,
+    scope?: StringKeyObject
+  ) {
     this.value = value;
     this.scope = scope || {};
+    this.defaultValue = defaultValue;
   }
 
   stopPropagating() {
@@ -118,14 +132,14 @@ const evaluateProps = <
 >(
   props: ElementProps,
   options: PropEvaluationOptions<NativeProps, CustomProps> = {}
-): Props<ElementProps> => {
+): Props<ElementProps, NativeProps, CustomProps> => {
   /**
    * TODO:
    *
    * Make `Props` class distinguish between Custom and Native props
    * so that they can be intellisensed
    */
-  const updatedProps: Props<ElementProps> = new Props<ElementProps>(props);
+  const updatedProps = new Props<ElementProps, NativeProps, CustomProps>(props);
   const propScope: StringKeyObject = options.scope || {};
 
   /**
@@ -134,53 +148,49 @@ const evaluateProps = <
    */
   for (const propKey in props) {
     const propValue = props[propKey];
+    let ref;
 
     if (options.customOverrides && options.customOverrides[propKey]) {
-      /**
-       * ISSUE:
-       *
-       * `propValue` is of type: `ElementProps[Extract<keyof ElementProps, string>]`
-       * but we must pass a type `CustomProps[Extract<keyof ElementProps, string>]`
-       * to `PropRef` in this code block. This is probably a sign of poor abstraction
-       * or type architecture, as it can most likely be simplified. For now, I am
-       * bypassing the issue by casting `propType` to `unknown` and then again
-       * to `CustomProps[Extract<keyof ElementProps, string>]` so the types don't
-       * encounter a merge conflict.
-       *
-       * Use this to find the value that the prop updater functions
-       * are expecting:
-       *
-       * ```
-       * const f = options.customOverrides[propKey]
-       * f()
-       * ```
-       */
-      options.customOverrides[propKey](
-        new PropRef<CustomProps[Extract<keyof ElementProps, string>]>(
-          forceType<
-            typeof propValue,
-            CustomProps[Extract<keyof ElementProps, string>]
-          >(propValue),
-          propScope
-        )
+      ref = new PropRef<CustomProps[Extract<keyof ElementProps, string>]>(
+        forceType<CustomProps[Extract<keyof ElementProps, string>]>(propValue),
+        options?.customDefaults?.[propKey],
+        propScope
       );
-      updatedProps.custom.set(propKey, propValue);
+
+      options.customOverrides[propKey](ref);
+
+      if (
+        ref.propagating() &&
+        defaultPropsBehavior?.customOverrides?.[propKey]
+      ) {
+        defaultPropsBehavior.customOverrides[propKey](ref);
+      }
+
+      updatedProps.custom.set(propKey, ref.value);
+      //
     } else if (options.nativeOverrides && options.nativeOverrides[propKey]) {
-      updatedProps.native.set(
-        propKey,
-        options.nativeOverrides[propKey](
-          new PropRef<NativeProps[Extract<keyof ElementProps, string>]>(
-            forceType<
-              typeof propValue,
-              NativeProps[Extract<keyof ElementProps, string>]
-            >(propValue),
-            propScope
-          )
-        )
+      ref = new PropRef<NativeProps[Extract<keyof ElementProps, string>]>(
+        forceType<NativeProps[Extract<keyof ElementProps, string>]>(propValue),
+        options?.nativeDefaults?.[propKey],
+        propScope
       );
+
+      options.nativeOverrides[propKey](ref);
+
+      if (
+        ref.propagating() &&
+        defaultPropsBehavior?.nativeOverrides?.[propKey]
+      ) {
+        defaultPropsBehavior.nativeOverrides[propKey](ref);
+      }
+
+      updatedProps.native.set(propKey, ref.value);
+      //
+    } else {
+      // ref = new PropRef<typeof propValue>(propValue, undefined, propScope);
     }
 
-    updatedProps.native.set(propKey, propValue);
+    // updatedProps.set(propKey, ref.value);
   }
 
   /**
@@ -193,26 +203,32 @@ const evaluateProps = <
         defaultPropKey
       ] as keyof NativeProps;
 
-      if (updatedProps.get(defaultPropKey) === undefined) {
+      if (!updatedProps.native.has(defaultPropKey)) {
         if (
           options.nativeOverrides &&
           options.nativeOverrides[defaultPropKey]
         ) {
-          updatedProps.native.set(
-            defaultPropKey,
-            options.nativeOverrides[defaultPropKey](
-              new PropRef<NativeProps[Extract<keyof NativeProps, string>]>(
-                forceType<
-                  typeof defaultPropValue,
-                  NativeProps[Extract<keyof NativeProps, string>]
-                >(defaultPropValue)
-              )
+          const ref = options.nativeOverrides[defaultPropKey](
+            new PropRef<NativeProps[Extract<keyof NativeProps, string>]>(
+              forceType<NativeProps[Extract<keyof NativeProps, string>]>(
+                defaultPropValue
+              ),
+              undefined,
+              propScope
             )
           );
-        } else {
-          updatedProps.native.set(
-            defaultPropKey,
-            options.nativeDefaults[defaultPropKey]
+
+          if (ref.propagating() && defaultPropsBehavior[defaultPropKey]) {
+            // pass on to defaultPropBehavior
+            defaultPropsBehavior[defaultPropKey](ref);
+          }
+        } else if (defaultPropsBehavior[defaultPropKey]) {
+          defaultPropsBehavior[defaultPropKey](
+            new PropRef<typeof defaultPropValue>(
+              defaultPropValue,
+              undefined,
+              propScope
+            )
           );
         }
       }

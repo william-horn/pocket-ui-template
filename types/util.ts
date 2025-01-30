@@ -28,4 +28,4 @@ export type AllNativeProps = {
   [K in keyof AllHTMLAttributes<undefined>]?: AllHTMLAttributes<undefined>[K];
 };
 
-export const forceType = <A, B>(value: A) => value as unknown as B;
+export const forceType = <B>(value: unknown) => value as B;

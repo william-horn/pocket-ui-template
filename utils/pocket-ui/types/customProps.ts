@@ -1,3 +1,5 @@
+import type { StringKeyObject } from "@/types/util";
+
 /**
  * CUSTOM PROPERTY DEFINITIONS:
  *
@@ -5,11 +7,13 @@
  * and their default behavior functions are declared.
  */
 export type CustomProp = keyof CustomProps;
-export type CustomProps = {
-  className?: any;
-  width?: any;
-  height?: any;
-};
+export type CustomProps = Readonly<
+  {
+    className?: unknown;
+    width?: unknown;
+    height?: unknown;
+  } & StringKeyObject
+>;
 
 // Object declaration
 export const customProps: CustomProps = {

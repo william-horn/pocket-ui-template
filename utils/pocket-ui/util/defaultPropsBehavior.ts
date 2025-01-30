@@ -4,8 +4,10 @@ import { twMerge } from "tailwind-merge";
 
 const defaultPropsBehavior: PropEvaluationOptions = {
   nativeOverrides: {
-    className: (value, scope) => {
-      return twMerge(scope!.baseClass, value);
+    className: (ref) => {
+      console.log("Default behavior activated");
+      ref.value = twMerge(ref.defaultValue, ref.value);
+      return ref;
     },
   },
   customOverrides: {},
